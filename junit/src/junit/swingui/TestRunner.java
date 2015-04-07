@@ -521,7 +521,7 @@ public class TestRunner extends BaseTestRunner implements DocumentListener {
 	
 	private File getSettingsFile() {
 	 	String home= System.getProperty("user.home");
-	 	JunitAssert.assertNotNull(home); // spec says, this must exist
+	 	JunitAssert.junitAssertNotNull(home); // spec says, this must exist
  		return new File(home,".junitsession");
  	}
 	

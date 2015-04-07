@@ -89,7 +89,7 @@ public class JunitAssert {
 	/**
 	 * Asserts that an object isn't null.
 	 */
-	static public void assertNotNull(Object object) {
+	static public void junitAssertNotNull(Object object) {
 		junitAssertNotNull(null, object);
 	}
 	/**
@@ -134,7 +134,7 @@ public class JunitAssert {
 	/**
 	 * Fails a test with no message. 
 	 */
-	static public void fail() {
+	static public void junitFail() {
 		junitFail(null);
 	}
 	/**
