@@ -1,0 +1,12 @@
+To/A/AA.txt
+To/B/BA/BAA/BAAA.txt
+To/B/BA/BAA/BAAT.txt
+To/C/CA.txt
+To/D/DA.txt
+To/E/EA.txt
+To/G/GA.txt
+To/A.txt
+To/B.txt
+To/C.txt
+To/D.txt
+To/G.txt
