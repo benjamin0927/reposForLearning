@@ -43,11 +43,27 @@ public class TestSuite implements Test {
 
 	 public TestSuite(final Class theClass) {
 		fName= theClass.getName();	
+		// Get the constructor which takes a single String as its argument.
 		Constructor constructor= getConstructor(theClass);
+		
+		/**
+		 * java.lang.reflect.Modifier
+		 * PUBLIC: 1
+		 * PRIVATE: 2
+		 * PROTECTED: 4
+		 * STATIC: 8
+		 * FINAL: 16
+		 * SYNCHRONIZED: 32
+		 * VOLATILE: 64
+		 * TRANSIENT: 128
+		 * NATIVE: 256
+		 * INTERFACE: 512
+		 * ABSTRACT: 1024
+		 * STRICT: 2048
+		 */
 		if (!Modifier.isPublic(theClass.getModifiers())) {
 			addTest(warning("Class "+theClass.getName()+" is not public"));
 			return;
-
 		}
 		if (constructor == null) {
 			addTest(warning("Class "+theClass.getName()+" has no public constructor TestCase(String name)"));
@@ -56,6 +72,11 @@ public class TestSuite implements Test {
 
 		Class superClass= theClass;
 		Vector names= new Vector();
+		
+		/**
+		 * isAssignableFrom - class one and class two extends the same super class 
+		 * 		or implemented the same interface 
+		 */
 		while (Test.class.isAssignableFrom(superClass)) {
 			Method[] methods= superClass.getDeclaredMethods();
 			for (int i= 0; i < methods.length; i++) {
@@ -87,7 +108,9 @@ public class TestSuite implements Test {
 
 			Object[] args= new Object[]{name};
 			try {
+				// Add Test - constructor.newInstance(new Object[]{method.getName()})
 				addTest((Test)constructor.newInstance(args));
+				// System.out.println("Add Test - " + constructor + " - " + name);
 			} catch (Exception t) {
 				addTest(warning("Cannot instantiate test case: "+name));
 			}
@@ -145,6 +168,11 @@ public class TestSuite implements Test {
 		}
 	}
 	
+	/**
+	 * Runs a test and collects its result in a TestResult instance.
+	 * @param Test test
+	 * @param TestResult result
+	 */
 	public void runTest(Test test, TestResult result) {
 		test.run(result);
 	}
