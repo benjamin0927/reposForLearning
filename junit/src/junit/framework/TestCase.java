@@ -53,7 +53,7 @@ import java.lang.reflect.*;
  * In this case the name of the test case has to correspond to the test method
  * to be run.
  * <pre>
- * Test= new MathTest("testAdd");
+ * Test test = new MathTest("testAdd");
  * test.run();
  * </pre>
  * The tests to be run can be collected into a TestSuite. JUnit provides

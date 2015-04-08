@@ -47,8 +47,9 @@ public abstract class BaseTestRunner implements TestListener {
 		Test test= null;
 		try {
 			test= (Test)suiteMethod.invoke(null, new Class[0]); // static method
-			if (test == null)
+			if (test == null){
 				return test;
+			}
 		} catch(Exception e) {
 			runFailed("Could not invoke the suite() method");
 			return null;
