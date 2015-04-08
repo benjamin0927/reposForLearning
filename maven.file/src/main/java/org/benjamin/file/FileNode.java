@@ -84,7 +84,9 @@ public class FileNode {
 	}
 
 	public void loadFileNodeChildren(){
-		children = new ArrayList<FileNode>();
+		this.loadFileNodeChildren(Integer.MAX_VALUE);
+		
+/*		children = new ArrayList<FileNode>();
 		if(!this.isLeaf()) { 
 			File[] files = file.listFiles();
 			for(File file : files){
@@ -92,6 +94,20 @@ public class FileNode {
 				System.out.println(childFileNode.getName() + " - " + childFileNode.getDepth() + " - " + childFileNode.getCompareStatus());
 				children.add(childFileNode);
 				childFileNode.loadFileNodeChildren();
+			}
+		}*/
+	}
+	
+	public void loadFileNodeChildren(int depth){
+		children = new ArrayList<FileNode>();
+//		System.out.println("this.depth - " + this.getDepth() + ", depth - " + depth);
+		if(!this.isLeaf() && this.getDepth()<=depth) { 
+			File[] files = file.listFiles();
+			for(File file : files){
+				FileNode childFileNode = new FileNode(file, this);
+				System.out.println(childFileNode.getName() + " - " + childFileNode.getDepth() + " - " + childFileNode.getCompareStatus());
+				children.add(childFileNode);
+				childFileNode.loadFileNodeChildren(depth);
 			}
 		}
 	}
@@ -165,6 +181,29 @@ public class FileNode {
 		return fileNode;
 	}
 
+	/**
+	 * @param fileFrom	The FileNode to be compared
+	 * @param fileTo	The FileNoe to compare
+	 * @param depth		The depth to compare the FileNode
+	 * @return FileNode	The compared result will be stored as FIle Node
+	 * 
+	 * Load the FileNodes by depth, compare all the info in the loaded FileNodes
+	 */
+	public FileNode commpareFileNodes(File fileFrom, File fileTo, int depth) {
+		FileNode comparedNode = new FileNode(null);
+		
+		FileNode fileNodeFrom = new FileNode(fileFrom, null);
+		fileNodeFrom.loadFileNodeChildren(depth);
+		FileNode fileNodeTo = new FileNode(fileTo, null);
+		fileNodeTo.loadFileNodeChildren(depth);
+		
+		comparedNode = this.comparingFileNodes(comparedNode, CompareStatus.InFrom, fileNodeFrom, fileNodeTo);
+		comparedNode = this.comparingFileNodes(comparedNode, CompareStatus.InTo, fileNodeTo, fileNodeFrom);
+	
+		System.out.println("------------");
+		return comparedNode;
+	}
+	
 	public FileNode commpareFileNodes(File fileFrom, File fileTo) {
 		FileNode comparedNode = new FileNode(null);
 		
@@ -186,8 +225,8 @@ public class FileNode {
 		File fileTo = new File("/mnt/tmp/To");
 		
 		FileNode fileNode = new FileNode(null);
-		fileNode = fileNode.commpareFileNodes(fileFrom, fileTo);
+		fileNode = fileNode.commpareFileNodes(fileFrom, fileTo, 2);
 		
-		System.out.println("------");
+		System.out.println("------------");
 	}
 }
