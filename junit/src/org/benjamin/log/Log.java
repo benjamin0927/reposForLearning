@@ -46,7 +46,10 @@ public class Log {
 	public void error(String message){
 		this.log(LogLevel.ERROR, message);
 	}
-	
+
+	 public void fatal(String message){
+		this.log(LogLevel.FATAL, message);
+	 }
 	private void log(LogLevel logLevel, String message) {
 		if(this.compareLevel(logLevel)) {
 			logAppender.log(logLevel, message);
