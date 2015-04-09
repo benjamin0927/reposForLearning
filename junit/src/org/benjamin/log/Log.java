@@ -10,45 +10,52 @@ import java.util.Properties;
 import java.util.Map.Entry;
 
 public class Log {
-	public static final String logLevelProperty = "log.level";
+	private static final String LOG_LEVEL = "log.level";
+	private static final String IS_SPECIFIED_LOG_LEVEL = "is.specified.log.level";
 	private static LogLevel logLevel = LogLevel.INFO;
+	private static boolean isSpecifiedLogLevel = false;
 	PrintStream writer = System.out;
 	
 	public Log(){
 		try {
 			loadLogProperties();
-			logLevel = LogLevel.valueOf(System.getProperty("log.level"));
+			logLevel = LogLevel.valueOf(System.getProperty(LOG_LEVEL));
+			isSpecifiedLogLevel = Boolean.valueOf(System.getProperty(IS_SPECIFIED_LOG_LEVEL));
 		} catch (Exception e) {
 			writer.println("Using the default Log Level - " + logLevel);
 		}
 	}
 	
 	public void debug(String message){
-		if(this.compareLevel(LogLevel.DEBUG)) {
-			writer.println(message);
-		}
+		this.log(LogLevel.WARN, message);
 	}
 	
 	public void info(String message){
-		if(this.compareLevel(LogLevel.INFO)) {
-			writer.println(message);
-		}
+		this.log(LogLevel.WARN, message);
 	}
 	
 	public void warn(String message){
-		if(this.compareLevel(LogLevel.WARN)) {
-			writer.println(message);
-		}
+		this.log(LogLevel.WARN, message);
 	}
 	
 	public void error(String message){
-		if(this.compareLevel(LogLevel.ERROR)) {
+		this.log(LogLevel.ERROR, message);
+	}
+	
+	private void log(LogLevel logLevel, String message) {
+		if(this.compareLevel(logLevel)) {
 			writer.println(message);
 		}
 	}
 	
 	private boolean compareLevel(LogLevel logLevel) {
-		return this.logLevel.getLevel() >= logLevel.getLevel();
+		boolean comparedLevel = false;
+		if(isSpecifiedLogLevel) {
+			comparedLevel = this.logLevel.getLevel() == logLevel.getLevel();
+		} else{
+			comparedLevel = this.logLevel.getLevel() >= logLevel.getLevel();
+		}
+		return comparedLevel;
 	}
 	
 	private void loadLogProperties() throws FileNotFoundException, IOException{
