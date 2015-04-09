@@ -3,36 +3,29 @@ package org.benjamin.log;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Properties;
 import java.util.Map.Entry;
 
+import org.benjamin.log.appender.LogAppender;
+
 public class Log {
 	private static final String LOG_LEVEL = "log.level";
 	private static final String IS_SPECIFIED_LOG_LEVEL = "is.specified.log.level";
 	private static final String LOG_APPENDER = "log.appender";
-	private static final String LOG_FILE_PATH = "log.file.path";
 	private static LogLevel logLevel = LogLevel.INFO;
 	private static boolean isSpecifiedLogLevel = false;
-	private static LogAppender logAppender = LogAppender.CONSOLE;
-	private static String logFilePath = "";
 	PrintStream writer = System.out;
-	FileWriter fileWriter;
+	LogAppender logAppender;
 	
 	public Log(){
 		try {
 			loadLogProperties();
 			logLevel = LogLevel.valueOf(System.getProperty(LOG_LEVEL));
 			isSpecifiedLogLevel = Boolean.valueOf(System.getProperty(IS_SPECIFIED_LOG_LEVEL));
-			logAppender = LogAppender.valueOf(System.getProperty(LOG_APPENDER));
-			logFilePath = System.getProperty(LOG_FILE_PATH);
-			
-			if(logAppender.name().equals(LogAppender.FILE.name())) {
-				fileWriter = this.getFileWriter(logFilePath);
-			}
+			logAppender = (LogAppender) Class.forName(System.getProperty(LOG_APPENDER)).newInstance();
 		} catch (Exception e) {
 			writer.println("Using the default Log Level - " + logLevel);
 		}
@@ -54,25 +47,9 @@ public class Log {
 		this.log(LogLevel.ERROR, message);
 	}
 	
-	public void fatal(String message){
-		this.log(LogLevel.FATAL, message);
-	}
 	private void log(LogLevel logLevel, String message) {
 		if(this.compareLevel(logLevel)) {
-			switch(logAppender) {
-			case CONSOLE:
-				writer.println(logLevel + " - " + message);
-				break;
-			case FILE:
-				try {
-					fileWriter.write(logLevel + " - " + message + "\n");
-					fileWriter.flush();
-				} catch (IOException e) {
-					writer.println(e);
-				}
-				break;
-			}
-			
+			logAppender.log(logLevel, message);
 		}
 	}
 	
@@ -83,16 +60,7 @@ public class Log {
 		} else{
 			comparedLevel = this.logLevel.getLevel() >= logLevel.getLevel();
 		}
-		
 		return comparedLevel;
-	}
-	
-	private FileWriter getFileWriter(String filePath) throws IOException{
-		File file = new File(filePath);
-		if (!file.exists()) {
-			file.createNewFile();
-		}
-		return new FileWriter(file.getAbsoluteFile());
 	}
 	
 	private void loadLogProperties() throws FileNotFoundException, IOException{
