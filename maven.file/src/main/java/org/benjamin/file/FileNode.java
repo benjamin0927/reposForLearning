@@ -1,16 +1,25 @@
 package org.benjamin.file;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.io.FileUtils;
 
 public class FileNode {
 	private FileNode parent;
 	protected List<FileNode> children = new ArrayList<FileNode>();
 	protected File file;
+	protected BigInteger size;
 	private String name;
 	protected CompareStatus compareStatus;
+	protected SizeCompareStatus compareSizeStatus;
 	private int depth;
+	
+	protected FileWriter writer;
 
 	public FileNode(FileNode parent) {
 		super();
@@ -23,11 +32,20 @@ public class FileNode {
 			this.depth = parent.depth + 1;
 		}
 		
+		 try {
+			writer = this.getFileWriter("E:/ShareVM/5.5/git2svn.log");
+		} catch (IOException e) {
+		}
 	}
 	
 	public FileNode(File file, FileNode parent) {
 		this(parent);
 		this.file = file;
+		if(file.isDirectory()) {
+			this.size = FileUtils.sizeOfDirectoryAsBigInteger(file);
+		} else {
+			this.size = BigInteger.valueOf(FileUtils.sizeOf(file));
+		}
 		this.compareStatus = CompareStatus.InNone;
 	}
 	
@@ -68,6 +86,22 @@ public class FileNode {
 		this.compareStatus = compareStatus;
 	}
 	
+	public BigInteger getSize() {
+		return size;
+	}
+
+	public void setSize(BigInteger size) {
+		this.size = size;
+	}
+
+	public SizeCompareStatus getCompareSizeStatus() {
+		return compareSizeStatus;
+	}
+
+	public void setCompareSizeStatus(SizeCompareStatus compareSizeStatus) {
+		this.compareSizeStatus = compareSizeStatus;
+	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -98,6 +132,48 @@ public class FileNode {
 		}*/
 	}
 	
+	public void printFileNodeChildren(){
+
+		
+		if(this.getCompareStatus() != CompareStatus.InBoth || this.getCompareSizeStatus() != SizeCompareStatus.EQUAL) {
+//			for(int i=0; i<this.getDepth(); i++) {
+//				System.out.print("----");
+//			}
+			if(this.getDepth() !=0) {
+				try {
+					System.out.println(this.getFile().getAbsolutePath().replace("\\", "/") + " - " + this.getName() + " - " + this.getDepth() + " - " + this.getCompareStatus() + " - " + this.size + " - " + this.compareSizeStatus);
+					
+					writer.write(this.getFile().getAbsolutePath().replace("\\", "/") + " - " + this.getName() + " - " + this.getDepth() + " - " + this.getCompareStatus() + " - " + this.size + " - " + this.compareSizeStatus + "\n");
+					writer.flush();
+				} catch (Exception e) {
+					e.printStackTrace();
+					System.out.println(this.getName() + " - " + this.getDepth() + " - " + this.getCompareStatus() + " - " + this.size + " - " + this.compareSizeStatus);
+					try {
+						try{
+							writer.write(this.getParent().getFile().getAbsolutePath());
+							writer.flush();
+						}
+						catch(Exception ee) {
+							
+						}
+						writer.write(this.getName() + " - " + this.getDepth() + " - " + this.getCompareStatus() + " - " + this.size + " - " + this.compareSizeStatus + "\n");
+						writer.flush();
+						writer.write("--- EE ---\n");
+						writer.flush();
+					} catch (IOException e1) {
+					}
+					
+					System.out.println("-- EE --");
+				}
+			}
+			
+		}
+//		System.out.println(this.getName() + " - " + this.getDepth() + " - " + this.getCompareStatus() + " - " + this.size + " - " + this.compareSizeStatus);
+		for(FileNode child : this.getChildren()){
+			child.printFileNodeChildren();
+		}
+	}
+	
 	public void loadFileNodeChildren(int depth){
 		children = new ArrayList<FileNode>();
 //		System.out.println("this.depth - " + this.getDepth() + ", depth - " + depth);
@@ -105,7 +181,7 @@ public class FileNode {
 			File[] files = file.listFiles();
 			for(File file : files){
 				FileNode childFileNode = new FileNode(file, this);
-				System.out.println(childFileNode.getName() + " - " + childFileNode.getDepth() + " - " + childFileNode.getCompareStatus());
+				System.out.println(childFileNode.getName() + " - " + childFileNode.getDepth() + " - " + childFileNode.getCompareStatus() + " - " + childFileNode.size);
 				children.add(childFileNode);
 				childFileNode.loadFileNodeChildren(depth);
 			}
@@ -117,7 +193,11 @@ public class FileNode {
 		for (FileNode nodeFrom : fileNodeFrom.getChildren()) {
 			boolean inBooth = false;
 			String nodeFileFromName = nodeFrom.getName();
-			System.out.println("Node From Name - " + nodeFileFromName);
+//			System.out.println("Node From Name - " + nodeFileFromName);
+			
+			if(nodeFileFromName.contains("r81376")){
+				System.out.println(nodeFileFromName);
+			}
 			
 			// If the node not existed in the comparedNode, then initial the Node child
 			FileNode node = comparedNode.hasChildByName(nodeFileFromName);
@@ -130,8 +210,29 @@ public class FileNode {
 				node.setName(nodeFileFromName);
 			}
 			
+			
 			for (FileNode nodeTo : fileNodeTo.getChildren()) {
-				if (nodeTo.getName().equals(nodeFileFromName)) {
+				String nodeFileToName = nodeTo.getName();
+				if(nodeFileToName.contains("SNAP")) {
+					nodeFileToName = nodeFileToName.split("_")[0];
+					nodeFileFromName = nodeFileFromName.split("_")[0];
+				} else{
+					nodeFileFromName = nodeFrom.getName();
+				}
+				
+				if(nodeFileToName.contains("r81376")){
+					System.out.println(nodeFileFromName);
+				}
+				
+				if (nodeFileToName.equals(nodeFileFromName)) {
+//					sizeCompareStatus = nodeFrom.size.compareTo(nodeTo.size) == 0;
+					if(compareStatusFrom.equals(CompareStatus.InFrom)) {
+						node.setCompareSizeStatus(SizeCompareStatus.getSizeCompareStatus(nodeFrom.getSize().compareTo(nodeTo.getSize())));
+					} else {
+						node.setCompareSizeStatus(SizeCompareStatus.getSizeCompareStatus(-nodeFrom.getSize().compareTo(nodeTo.getSize())));
+					}
+					
+					node.setSize(nodeFrom.getSize());
 					inBooth = true;
 					
 					// If the Node One is not a leaf, then compare their children
@@ -146,11 +247,12 @@ public class FileNode {
 			if (!inBooth) {
 				nodeFrom.setCompareStatus(compareStatusFrom);
 				node.setCompareStatus(compareStatusFrom);
+				
+				node.setFile(nodeFrom.getFile());
 			} else {
 				nodeFrom.setCompareStatus(CompareStatus.InBoth);
 				node.setCompareStatus(CompareStatus.InBoth);
 			}
-			
 			
 			comparedNode.addChildNode(node);
 		}		
@@ -214,19 +316,18 @@ public class FileNode {
 		
 		comparedNode = this.comparingFileNodes(comparedNode, CompareStatus.InFrom, fileNodeFrom, fileNodeTo);
 		comparedNode = this.comparingFileNodes(comparedNode, CompareStatus.InTo, fileNodeTo, fileNodeFrom);
-	
 		System.out.println("------------");
 		return comparedNode;
 	}
 	
+	private FileWriter getFileWriter(String filePath) throws IOException{
+		File file = new File(filePath);
+		if (!file.exists()) {
+			file.createNewFile();
+		}
+		return new FileWriter(file.getAbsoluteFile(),true);
+	}
+	
 	public static void main(String[] args) {
-		
-		File fileFrom = new File("/mnt/tmp/From");
-		File fileTo = new File("/mnt/tmp/To");
-		
-		FileNode fileNode = new FileNode(null);
-		fileNode = fileNode.commpareFileNodes(fileFrom, fileTo, 2);
-		
-		System.out.println("------------");
 	}
 }
