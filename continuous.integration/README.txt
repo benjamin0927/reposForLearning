@@ -1,0 +1,8 @@
+GIT
+SVN
+FTP
+SAMBA
+HTTPS
+SSH
+XML
+Properties
