@@ -1,4 +1,4 @@
-package org.benjamin.ci.modules;
+package org.benjamin.ci.modules.git;
 
 import java.io.File;
 
