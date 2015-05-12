@@ -18,14 +18,13 @@ File
  -> Jar
  -> excel
  -> pdf
- 
+
 Container
  -> cargo
 OS
  -> OS versions
  -> process
  -> command - exec
-  
+
 Java
  -> unify version (java home)
- 
