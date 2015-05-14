@@ -28,3 +28,6 @@ OS
 
 Java
  -> unify version (java home)
+ 
+ Virtual Box / VMWare
+ 

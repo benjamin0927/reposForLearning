@@ -6,7 +6,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 
 	<dependencies>
- 		<dependency>
+		<dependency>
 			<groupId>commons-net</groupId>
 			<artifactId>commons-net</artifactId>
 			<version>3.3</version>
@@ -42,16 +42,23 @@
 			<artifactId>jira-rest-java-client</artifactId>
 			<version>2.0.0-m2</version>
 		</dependency>
+		
+		<dependency>
+			<groupId>com.cloudbees.thirdparty</groupId>
+			<artifactId>vijava</artifactId>
+			<version>5.1</version>
+		</dependency>
+
 		<dependency>
 			<groupId>log4j</groupId>
 			<artifactId>log4j</artifactId>
 			<version>1.2.17</version>
 		</dependency>
 	</dependencies>
-<repositories>
-  <repository>
-    <id>opencast-public</id>
-    <url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
-  </repository>
-</repositories>
+	<repositories>
+		<repository>
+			<id>opencast-public</id>
+			<url>http://repository.opencastproject.org/nexus/content/repositories/public/</url>
+		</repository>
+	</repositories>
 </project>
