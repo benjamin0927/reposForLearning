@@ -6,6 +6,9 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand.ResetType;
 import org.eclipse.jgit.transport.UsernamePasswordCredentialsProvider;
 
+/**
+ * https://github.com/rimerosolutions/ant-git-tasks
+ */
 public class GIT {
 	String command;
 	String url;
