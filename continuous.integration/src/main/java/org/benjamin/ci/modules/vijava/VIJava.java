@@ -97,6 +97,10 @@ public class VIJava {
 	public VirtualMachineQuickStats getVirtualMachineQuickStatsForVM(final String vmName) throws InvalidProperty, RuntimeFault, RemoteException{
         return this.getVirtualMachineSummaryForVM(vmName).getQuickStats();
 	}
+
+	public String getVirtualMachineAnnotation(final String vmName) throws InvalidProperty, RuntimeFault, RemoteException{
+        return this.getVirtualMachineSummaryForVM(vmName).getConfig().getAnnotation();
+	}
 	
 	public void doVMAction(final String vmName, VMAction vmAction) throws InvalidProperty, RuntimeFault, RemoteException {
 		VirtualMachine vm = this.getVMByName(vmName);
