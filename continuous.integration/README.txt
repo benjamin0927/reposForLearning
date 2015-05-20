@@ -30,4 +30,8 @@ Java
  -> unify version (java home)
  
  Virtual Box / VMWare
+ - VMWare - vijava
+ 
+ Jenkins
+ - https://github.com/RisingOak/jenkins-client.git
  

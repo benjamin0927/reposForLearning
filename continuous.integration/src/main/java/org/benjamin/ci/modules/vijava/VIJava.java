@@ -5,8 +5,13 @@ import java.io.FileInputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import com.vmware.vim25.CustomFieldDef;
+import com.vmware.vim25.CustomFieldStringValue;
+import com.vmware.vim25.CustomFieldValue;
 import com.vmware.vim25.GuestInfo;
 import com.vmware.vim25.InvalidProperty;
 import com.vmware.vim25.ManagedEntityStatus;
@@ -100,6 +105,31 @@ public class VIJava {
 
 	public String getVirtualMachineAnnotation(final String vmName) throws InvalidProperty, RuntimeFault, RemoteException{
         return this.getVirtualMachineSummaryForVM(vmName).getConfig().getAnnotation();
+	}
+
+	public Map<String, String> getVirtualMachineAttributes(final String vmName) throws InvalidProperty, RuntimeFault, RemoteException{
+		VirtualMachine vm = this.getVMByName(vmName);
+		Map<String, String> attributes = new HashMap<String, String>();
+		
+		Map<Integer, String> keys = new HashMap<Integer, String>();
+		for(CustomFieldDef def : vm.getAvailableField()){
+			keys.put(def.getKey(), def.getName());
+		}
+		
+		for(CustomFieldValue value : vm.getCustomValue()){
+			CustomFieldStringValue sfv = (CustomFieldStringValue)value;
+			attributes.put(keys.get(value.getKey()), sfv.getValue());
+		}
+		
+		return attributes;
+	}
+	
+	public void setVirtualMachineAttributes(final String vmName, Map<String, String> attributes) throws InvalidProperty, RuntimeFault, RemoteException{
+		VirtualMachine vm = this.getVMByName(vmName);
+		for (Map.Entry<String, String> attribute : attributes.entrySet()) {  
+			System.out.println("Key = " + attribute.getKey() + ", Value = " + attribute.getValue());
+	    	vm.setCustomValue(attribute.getKey(), attribute.getValue());
+		} 
 	}
 	
 	public void doVMAction(final String vmName, VMAction vmAction) throws InvalidProperty, RuntimeFault, RemoteException {
