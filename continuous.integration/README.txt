@@ -35,3 +35,14 @@ Java
  Jenkins
  - https://github.com/RisingOak/jenkins-client.git
  
+ UserManagement
+ - LDAP
+ 
+ JDK Installation
+ - https://www.java.com/en/download/help/silent_install.xml
+ - Automatically Set system variable and make it work immediately
+ - http://blog.csdn.net/lpy3654321/article/details/9822439 
+ 
+ Service
+ - Start/stop service
+ - Check what services are alive
