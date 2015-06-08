@@ -37,6 +37,8 @@ Java
  
  UserManagement
  - LDAP
+ - Password Management
+  -> KeePass
  
  JDK Installation
  - https://www.java.com/en/download/help/silent_install.xml
@@ -46,3 +48,8 @@ Java
  Service
  - Start/stop service
  - Check what services are alive
+ 
+ - Host name update
+ 
+ - Docker
+ 
